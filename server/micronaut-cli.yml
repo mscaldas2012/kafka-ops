@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: kafka.ops
+---
+testFramework: spek
+sourceLanguage: kotlin

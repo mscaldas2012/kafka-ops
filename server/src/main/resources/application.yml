@@ -1,0 +1,15 @@
+---
+micronaut:
+    application:
+        name: kafka-ops
+
+    server:
+        port: 11000
+        cors:
+            enabled: true
+---
+kafka:
+    bootstrap:
+        servers: localhost:9092
+
+
