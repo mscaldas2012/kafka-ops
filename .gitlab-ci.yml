@@ -12,7 +12,7 @@ stages:
   - deploy-int
   - purge-int
 include:
-  - local: '/server/gitlab-ci-server.yml'
+  - local: '/server/.gitlab-ci-server.yml'
 
 
 
