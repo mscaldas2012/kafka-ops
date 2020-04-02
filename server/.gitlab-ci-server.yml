@@ -4,6 +4,19 @@ variables:
   # KUBE_INGRESS_BASE_DOMAIN: domain.example.com
   DOCKER_DRIVER: overlay2
   APP_NAME: kafka-ops
+
+  REPOSITORY_URL: 471108701394.dkr.ecr.us-east-1.amazonaws.com
+  CONTAINER_IMAGE: arln/${APP_NAME}
+  DOCKER_TLS_CERTDIR: "" ##added to solve the issue https://gitlab.com/gitlab-org/gitlab-ce/issues/64959
+  TAG: ${CI_COMMIT_SHORT_SHA}
+
+  K8_DEV_NAMESPACE: "default"
+
+
+services:
+  - docker:dind
+
+
 stages:
   - build
   - deploy-dev
@@ -11,6 +24,40 @@ stages:
   - build-int
   - deploy-int
   - purge-int
+
+
+build:
+  stage: build
+  script:
+    - $(aws ecr get-login --no-include-email --region us-east-1)
+    - docker build -t ${CONTAINER_IMAGE}:${TAG} .
+    - docker tag ${CONTAINER_IMAGE}:${TAG} ${REPOSITORY_URL}/arln/${APP_NAME}:${TAG}
+    - docker push ${REPOSITORY_URL}/arln/${APP_NAME}:${TAG}
+  only:
+    refs:
+      - RELEASE
+      - master
+      - dev
+
+deploy-dev:
+  stage: deploy-dev
+  script:
+    - kubectl config set-cluster k8s --server="${SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${CERTIFICATE_AUTHORITY_DATA}
+    - kubectl config set-credentials gitlab --token="${USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - sed -i "s/<VERSION>/${TAG}/g" ${APP_NAME}-deployment.yaml
+    - pwd=$(aws ecr get-login --no-include-email --region us-east-1 | awk '{print $6}')
+    - kubectl delete secret eip-registry-secret || true
+    - echo $pwd
+    - kubectl create secret docker-registry eip-registry-secret --docker-server=https://${REPOSITORY_URL} --docker-username="AWS" --docker-password=$pwd -n default
+    - kubectl delete -f ${APP_NAME}-deployment.yaml || true
+    - kubectl apply -f ${APP_NAME}-deployment.yaml --namespace="default"
+  only:
+    - master
+    - dev
+
 include:
   - project: eip/whiterabbit/ci_cd_Template
     file: .gitlab-ci-meepmeep.yaml
@@ -18,8 +65,6 @@ include:
     file: .gitlab-cve-scan-ci.yaml
   - project: eip/whiterabbit/ci_cd_Template
     file: .gitlab-int-helm-cicd.yaml
-  - project: eip/whiterabbit/ci_cd_Template
-    file: .gitlab-dev-cicd.yaml
 
 
 
