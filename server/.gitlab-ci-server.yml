@@ -60,6 +60,42 @@ deploy-dev:
     - master
     - dev
 
+
+build-int:
+  # Official docker image.
+  image: docker:latest
+  stage: build-int
+  services:
+    - docker:dind
+  before_script:
+    # - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${REPOSITORY_URL}"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - cd server
+    - docker info
+    - docker build -f Dockerfile --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker tag  ${CI_REGISTRY_IMAGE}:latest "$CI_REGISTRY_IMAGE":"${CI_COMMIT_SHORT_SHA}"
+    - docker push "$CI_REGISTRY_IMAGE"
+    - docker push "$CI_REGISTRY_IMAGE":"${CI_COMMIT_SHORT_SHA}"
+  only:
+    - RELEASE-HELM
+
+deploy-int:
+  stage: deploy-int
+  script:
+    - cd server
+    - kubectl config set-cluster k8s --server="${SANDBOX_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${SANDBOX_CERTIFICATE_AUTHORITY_DATA}
+    - kubectl config set-credentials gitlab --token="${SANDBOX_USER_TOKEN}"
+    - kubectl config set-context ${K8_INT_NAMESPACE} --cluster=k8s --user=gitlab
+    - kubectl config use-context ${K8_INT_NAMESPACE}
+    - helm list --namespace "${K8_INT_NAMESPACE}"
+    - helm upgrade --install --wait ${CI_PROJECT_NAME} --namespace ${K8_INT_NAMESPACE} ./helm/${CI_PROJECT_NAME}
+  only:
+    refs:
+      - RELEASE-HELM
+
+
 include:
   - project: eip/whiterabbit/ci_cd_Template
     file: .gitlab-ci-meepmeep.yaml

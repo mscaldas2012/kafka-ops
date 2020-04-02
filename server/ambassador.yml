@@ -1,0 +1,8 @@
+---
+apiVersion: getambassador.io/v1
+kind: Mapping
+metadata:
+  name: kafka-ops
+spec:
+  prefix: /kafka-ops/
+  service: kafka-ops:11000
