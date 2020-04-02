@@ -1,0 +1,27 @@
+image: mscaldas/aws-k8s-build:3
+variables:
+  # KUBE_INGRESS_BASE_DOMAIN is the application deployment domain and should be set as a variable at the group or project level.
+  # KUBE_INGRESS_BASE_DOMAIN: domain.example.com
+  DOCKER_DRIVER: overlay2
+  APP_NAME: kafka-ops
+stages:
+  - build
+  - deploy-dev
+  - scan
+  - build-int
+  - deploy-int
+  - purge-int
+include:
+  - project: eip/whiterabbit/ci_cd_Template
+    file: .gitlab-ci-meepmeep.yaml
+  - project: eip/whiterabbit/ci_cd_Template
+    file: .gitlab-cve-scan-ci.yaml
+  - project: eip/whiterabbit/ci_cd_Template
+    file: .gitlab-int-helm-cicd.yaml
+  - project: eip/whiterabbit/ci_cd_Template
+    file: .gitlab-dev-cicd.yaml
+
+
+
+
+

@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka-ops
+    version: "0.1"
+  name: kafka-ops
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: kafka-ops
+  template:
+    metadata:
+      labels:
+        app: kafka-ops
+        version: "0.1"
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+
+        envFrom:
+        - configMapRef:
+            name: aa-kafka
+        image: gitlab.sandbox.aimsplatform.com:4567/eip/whiterabbit/kafka-ops:latest
+        imagePullPolicy: Always
+        name: kafka-ops
+        ports:
+        - containerPort: 11000
+          name: commplex-main
+        - containerPort: 11000
+          name: http
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        securityContext:
+          privileged: false
+      imagePullSecrets:
+      - name: gitlab-sandbox
