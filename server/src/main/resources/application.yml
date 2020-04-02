@@ -12,4 +12,42 @@ kafka:
     bootstrap:
         servers: localhost:9092
 
+    application.id: ${micronaut.application.name}-${random.int}
+    #application.id: validator-streamer--1695807200
+    client.id: ${micronaut.application.name}
+    commit.interval.ms: 1000
+    auto.offset.reset: earliest
+
+    default:
+        deserialization:
+            exception:
+                handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+        key:
+            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+            deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value:
+            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+            deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      key.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+#      value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+
+#  consumers:
+#    #schema.registry.url: ${APP_SCHEMA_REGISTRY_URL}
+#    schema.registry.url: http://localhost:8082
+#
+#  streams:
+#    default:
+#      num.stream.threads: 1
+#      group.id: ${kafka.application.id}
+#      #schema.registry.url: ${APP_SCHEMA_REGISTRY_URL}
+#      schema.registry.url: http://localhost:8082
+
+app:
+    id: ${kafka.application.id}
+    brokers: ${kafka.bootstrap.servers}
+    keyDeserializer:  ${kafka.default.key.deserializer}
+    valueDeserializer: ${kafka.default.value.deserializer}
+
+
+
 

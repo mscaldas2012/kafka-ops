@@ -1,16 +1,13 @@
 package kafka.ops
 
+import io.micronaut.context.annotation.Value
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import java.time.Duration
 import java.util.*
 import javax.inject.Singleton
-
-import java.util.*
-import java.util.logging.Logger
 
 
 /**
@@ -20,21 +17,20 @@ import java.util.logging.Logger
  * @Author Marcelo Caldas mcq1@cdc.gov
  */
 @Singleton
-class KafkaProxy {
-
+class KafkaProxy(val appConfig: AppConfig) {
     val POLL_TIME_OUT = 5_000
 
-    //val consumer:KafkaConsumer<String, String>
-    //val props: Properties
-
-
     private fun getProperties(): Properties {
+        println(appConfig.brokers)
+        println(appConfig.keyDeserializer)
+        println(appConfig.valueDeserializer)
         val props = Properties()
-        val brokers = "http://localhost:9092"
 
-        props.put("bootstrap.servers", brokers)
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+        props.put("bootstrap.servers", appConfig.brokers)
+//        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+//        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
+        props.put("key.deserializer", appConfig.keyDeserializer)
+        props.put("value.deserializer", appConfig.valueDeserializer)
         props.put("group.id", UUID.randomUUID().toString())
         return props
     }

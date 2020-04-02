@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 internal class KafkaProxyTest {
 
-    val kafkaProxy: KafkaProxy = KafkaProxy()
+    @Inject
+    lateinit var kafkaProxy: KafkaProxy
 
 
     @Test
