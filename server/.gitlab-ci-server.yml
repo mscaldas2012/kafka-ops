@@ -29,6 +29,7 @@ stages:
 build:
   stage: build
   script:
+    - cd server
     - $(aws ecr get-login --no-include-email --region us-east-1)
     - docker build -t ${CONTAINER_IMAGE}:${TAG} .
     - docker tag ${CONTAINER_IMAGE}:${TAG} ${REPOSITORY_URL}/arln/${APP_NAME}:${TAG}
@@ -42,6 +43,7 @@ build:
 deploy-dev:
   stage: deploy-dev
   script:
+    - cd server
     - kubectl config set-cluster k8s --server="${SERVER}"
     - kubectl config set clusters.k8s.certificate-authority-data ${CERTIFICATE_AUTHORITY_DATA}
     - kubectl config set-credentials gitlab --token="${USER_TOKEN}"
