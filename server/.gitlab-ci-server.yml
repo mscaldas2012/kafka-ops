@@ -97,11 +97,11 @@ deploy-int:
 
 
 include:
-  - project: eip/whiterabbit/ci_cd_Template
+  - project: eip/alice/ci_cd_Template
     file: .gitlab-ci-meepmeep.yaml
-  - project: eip/whiterabbit/ci_cd_Template
+  - project: eip/alice/ci_cd_Template
     file: .gitlab-cve-scan-ci.yaml
-  - project: eip/whiterabbit/ci_cd_Template
+  - project: eip/alice/ci_cd_Template
     file: .gitlab-int-helm-cicd.yaml
 
 
