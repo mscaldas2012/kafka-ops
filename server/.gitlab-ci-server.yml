@@ -35,10 +35,7 @@ build:
     - docker tag ${CONTAINER_IMAGE}:${TAG} ${REPOSITORY_URL}/arln/${APP_NAME}:${TAG}
     - docker push ${REPOSITORY_URL}/arln/${APP_NAME}:${TAG}
   only:
-    refs:
-      - RELEASE
-      - master
-      - dev
+    - disabled
 
 deploy-dev:
   stage: deploy-dev
@@ -57,8 +54,7 @@ deploy-dev:
     - kubectl delete -f ${APP_NAME}-deployment.yaml || true
     - kubectl apply -f ${APP_NAME}-deployment.yaml --namespace="default"
   only:
-    - master
-    - dev
+    - disabled
 
 
 build-int:
