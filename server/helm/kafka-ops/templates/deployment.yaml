@@ -28,7 +28,7 @@ spec:
         envFrom:
         - configMapRef:
             name: aa-kafka
-        image: gitlab.sandbox.aimsplatform.com:4567/eip/alice/kafka-ops:latest
+        image: {{ .Values.imageRepo }}/kafka-ops:latest
         imagePullPolicy: Always
         name: kafka-ops
         ports:
