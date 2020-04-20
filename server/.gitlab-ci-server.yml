@@ -5,7 +5,7 @@ variables:
   DOCKER_DRIVER: overlay2
   APP_NAME: kafka-ops
 
-  REPOSITORY_URL: 471108701394.dkr.ecr.us-east-1.amazonaws.com
+  REPOSITORY_URL: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}
   CONTAINER_IMAGE: arln/${APP_NAME}
   DOCKER_TLS_CERTDIR: "" ##added to solve the issue https://gitlab.com/gitlab-org/gitlab-ce/issues/64959
   TAG: ${CI_COMMIT_SHORT_SHA}
@@ -86,7 +86,7 @@ deploy-int:
     - kubectl config set-context ${K8_INT_NAMESPACE} --cluster=k8s --user=gitlab
     - kubectl config use-context ${K8_INT_NAMESPACE}
     - helm list --namespace "${K8_INT_NAMESPACE}"
-    - helm upgrade --install --wait ${CI_PROJECT_NAME} --namespace ${K8_INT_NAMESPACE} ./helm/${CI_PROJECT_NAME}
+    - helm upgrade --install --wait ${CI_PROJECT_NAME} --namespace ${K8_INT_NAMESPACE} --set imageRepo=$REPOSITORY_URL ./helm/${CI_PROJECT_NAME}
   only:
     refs:
       - RELEASE-HELM
