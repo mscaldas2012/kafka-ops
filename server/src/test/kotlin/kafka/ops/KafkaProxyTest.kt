@@ -52,7 +52,7 @@ internal class KafkaProxyTest {
 
     @Test
     fun testGetTopicInfo() {
-        val info = kafkaProxy.getTopicInfo("test1")
+        val info = kafkaProxy.getTopicInfo("test1").first()
         println("topicInfo.startOffset = ${info.startOffset}")
         println("info.endOffset = ${info.endOffset}")
         info.partitions?.forEach { println("p -> $it")}
