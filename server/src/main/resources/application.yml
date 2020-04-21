@@ -48,6 +48,8 @@ app:
     keyDeserializer:  ${kafka.default.key.deserializer}
     valueDeserializer: ${kafka.default.value.deserializer}
 
+s2s-auth-config:
+   token: unit-test
 
 
 

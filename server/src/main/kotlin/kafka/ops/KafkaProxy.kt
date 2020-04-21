@@ -61,21 +61,26 @@ class KafkaProxy(val appConfig: AppConfig) {
         adminClient.close()
     }
 
-    fun getTopicInfo(topicName: String):TopicInfo {
+    fun getTopicInfo(topicName: String): MutableList<TopicInfo> {
         val consumer = getConsumer()
         val partitions = consumer.partitionsFor(topicName)
         val partitionNumbers = partitions.map { it.partition() }
-        val partition = TopicPartition(topicName, partitionNumbers.first())
+       // val partition = TopicPartition(topicName, partitionNumbers.first())
         //consumer.subscribe(listOf(topicName))
-        consumer.assign(listOf(partition))
-        val topicInfo = TopicInfo()
-        topicInfo.partitions = partitionNumbers
-        consumer.seekToBeginning(listOf(partition))
-        topicInfo.startOffset = consumer.position(partition)
-        consumer.seekToEnd(listOf(partition))
-        topicInfo.endOffset = consumer.position(partition)
 
-        return topicInfo
+        val result = mutableListOf<TopicInfo>()
+        partitionNumbers.forEach {
+            val partition = TopicPartition(topicName, it)
+            consumer.assign(listOf(partition))
+            val topicInfo = TopicInfo()
+            topicInfo.partitions = partitionNumbers
+            consumer.seekToBeginning(listOf(partition))
+            topicInfo.startOffset = consumer.position(partition)
+            consumer.seekToEnd(listOf(partition))
+            topicInfo.endOffset = consumer.position(partition)
+            result.add(topicInfo)
+        }
+        return result
     }
 
     fun getTopicContent(topicName: String, offSet: Long = 0): List<String> {

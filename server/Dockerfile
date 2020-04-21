@@ -13,5 +13,7 @@ VOLUME /tmp
 
 COPY --from=builder  /usr/src/app/target/kafka-ops*.jar ./kafka-ops.jar
 
+EXPOSE 11000
+
 RUN sh -c 'touch ./kafka-ops.jar'
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","./kafka-ops.jar"]

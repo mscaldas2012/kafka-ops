@@ -1,11 +1,11 @@
 package kafka.ops
 
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpResponse
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Delete
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
+import kafka.ops.security.S2SAuth
+import kafka.ops.security.ServiceNotAuthorizedException
 import java.util.*
 import java.util.logging.Logger
 
@@ -16,40 +16,51 @@ import java.util.logging.Logger
  * @Author Marcelo Caldas mcq1@cdc.gov
  */
 @Controller("/kafka")
-class KafkaController(val kafkaProxy: KafkaProxy) {
+class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
     companion object {
         val logger = Logger.getLogger(KafkaController::class.toString())
     }
 
     @Get("/topics")
-    fun getTopics(): Array<String> {
+    fun getTopics(@Header("s2s-token") token: String): Array<String> {
         logger.info("AUDIT - Retrieving list of Topics")
+        s2sauth.checkS2SCredentials(token)
         return kafkaProxy.listTopics()
     }
     @Post("/topics/{topicName}")
-    fun createTopic(topicName:String ): HttpResponse<String> {
+    fun createTopic(@Header("s2s-token") token: String, topicName:String ): HttpResponse<String> {
         logger.info("AUDIT - Creating new Topic $topicName")
+        s2sauth.checkS2SCredentials(token)
         kafkaProxy.createTopic(topicName)
         return HttpResponse.ok("topic ${topicName} created")
     }
 
     @Get("topics/{topicName}")
-    fun listTopicContent(topicName: String): MutableHttpResponse<List<String>>? {
+    fun listTopicContent(@Header("s2s-token") token: String, topicName: String): MutableHttpResponse<List<String>>? {
         logger.info("AUDIT - Getting contents of topic $topicName")
+        s2sauth.checkS2SCredentials(token)
         val content = kafkaProxy.getTopicContent(topicName)
         return HttpResponse.ok(content)
     }
 
     @Get("topics/{topicName}/info")
-    fun getTopicInfo(topicName: String): TopicInfo {
+    fun getTopicInfo(@Header("s2s-token") token: String, topicName: String): MutableList<TopicInfo> {
         logger.info("AUDIT - Getting information for topic $topicName")
+        s2sauth.checkS2SCredentials(token)
         return kafkaProxy.getTopicInfo(topicName)
     }
 
     @Delete("topics/{topicName}")
-    fun deleteTopic(topicName: String): HttpResponse<Any>  {
+    fun deleteTopic(@Header("s2s-token") token: String, topicName: String): HttpResponse<Any>  {
         logger.info("AUDIT - Deleting topic $topicName")
+        s2sauth.checkS2SCredentials(token)
         kafkaProxy.deleteTopic(topicName)
         return HttpResponse.ok()
+    }
+
+    @Error(exception = ServiceNotAuthorizedException::class)
+    protected fun handleAuthorizationErrors(request: HttpRequest<*>, e: ServiceNotAuthorizedException): HttpResponse<Any> {
+        logger.severe("ServiceNotAuthorizedException thrown: " + e.message)
+        return HttpResponse.unauthorized()
     }
 }
