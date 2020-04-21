@@ -9,14 +9,14 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     kubernetes.io/tls-acme: "true"
-    external-dns.alpha.kubernetes.io/hostname: kafka-ops.alice-qa.eks.sandbox.aimsplatform.com
+    external-dns.alpha.kubernetes.io/hostname: kafka-ops.alice-onboard.eks.sandbox.aimsplatform.com
   labels:
     app: kafka-ops
     version: "0.1"
   name: kafka-ops
 spec:
   rules:
-  - host: kafka-ops.alice-qa.eks.sandbox.aimsplatform.com
+  - host: kafka-ops.alice-onboard.eks.sandbox.aimsplatform.com
     http:
       paths:
       - backend:
@@ -25,5 +25,5 @@ spec:
         path: /
   tls:
   - hosts:
-    - kafka-ops.alice-qa.eks.sandbox.aimsplatform.com
-    secretName: kafka-ops-alice-qa-eks-sandbox-aimsplatform-com-tls
+    - kafka-ops.alice-onboard.eks.sandbox.aimsplatform.com
+    secretName: kafka-ops-alice-onboard-eks-sandbox-aimsplatform-com-tls
