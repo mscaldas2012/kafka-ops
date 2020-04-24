@@ -10,6 +10,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlinVersion>1.3.50</kotlinVersion>
     <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
+    <docker.image.prefix>${env.CI_REGISTRY}/${env.CI_PROJECT_NAMESPACE}</docker.image.prefix>
   </properties>
   <repositories>
         <repository>
