@@ -55,6 +55,6 @@ internal class KafkaProxyTest {
         val info = kafkaProxy.getTopicInfo("test1").first()
         println("topicInfo.startOffset = ${info.startOffset}")
         println("info.endOffset = ${info.endOffset}")
-        info.partitions?.forEach { println("p -> $it")}
+        println("partition Number: ${info.partitionNumber}")
     }
 }

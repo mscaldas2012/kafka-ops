@@ -43,6 +43,14 @@ class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
         return HttpResponse.ok(content)
     }
 
+    @Get("topics/{topicName}/{partition}")
+    fun listTopicContentForPartition(@Header("s2s-token") token: String, topicName: String, partition: Int): MutableHttpResponse<List<String>>? {
+        logger.info("AUDIT - Getting contents of topic $topicName / partition $partition")
+        s2sauth.checkS2SCredentials(token)
+        val content = kafkaProxy.getTopicContent(topicName, partition)
+        return HttpResponse.ok(content)
+    }
+
     @Get("topics/{topicName}/info")
     fun getTopicInfo(@Header("s2s-token") token: String, topicName: String): MutableList<TopicInfo> {
         logger.info("AUDIT - Getting information for topic $topicName")

@@ -72,8 +72,7 @@ class KafkaProxy(val appConfig: AppConfig) {
         partitionNumbers.forEach {
             val partition = TopicPartition(topicName, it)
             consumer.assign(listOf(partition))
-            val topicInfo = TopicInfo()
-            topicInfo.partitions = partitionNumbers
+            val topicInfo = TopicInfo(it)
             consumer.seekToBeginning(listOf(partition))
             topicInfo.startOffset = consumer.position(partition)
             consumer.seekToEnd(listOf(partition))
@@ -83,11 +82,10 @@ class KafkaProxy(val appConfig: AppConfig) {
         return result
     }
 
-    fun getTopicContent(topicName: String, offSet: Long = 0): List<String> {
+    fun getTopicContent(topicName: String, partitionNumber: Int = 0, offSet: Long = 0): List<String> {
         val consumer = getConsumer()
         val partitions = consumer.partitionsFor(topicName)
-        val partitionNumbers = partitions.map { it.partition() }
-        val partition = TopicPartition(topicName, partitionNumbers.first())
+        val partition = TopicPartition(topicName, partitionNumber)
         //consumer.subscribe(listOf(topicName))
         consumer.assign(listOf(partition))
         consumer.seek(partition, offSet)
@@ -106,8 +104,7 @@ class KafkaProxy(val appConfig: AppConfig) {
     }
 
 }
- class TopicInfo {
+ class TopicInfo(val partitionNumber: Int) {
     var startOffset: Long = 0
     var endOffset: Long = 0
-     var partitions: List<Int>? = null
  }
