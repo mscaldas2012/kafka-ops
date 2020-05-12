@@ -10,7 +10,7 @@ micronaut:
 ---
 kafka:
     bootstrap:
-        servers: localhost:9092
+        servers: kafka:9092
 
     application.id: ${micronaut.application.name}-${random.int}
     #application.id: validator-streamer--1695807200

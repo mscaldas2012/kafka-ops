@@ -28,6 +28,8 @@ spec:
         envFrom:
         - configMapRef:
             name: aa-kafka
+        - secretRef:
+            name: kafka-ops
         image: {{ .Values.imageRepo }}/kafka-ops:latest
         imagePullPolicy: Always
         name: kafka-ops
