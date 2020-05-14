@@ -52,7 +52,6 @@ class KafkaProxy(val appConfig: AppConfig) {
 
         adminClient.createTopics(listOf(newTopic))
         adminClient.close()
-        val str = if (adminClient != null) "a" else "b"
     }
 
     fun deleteTopic(topicName: String) {
