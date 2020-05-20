@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import java.time.Duration
 import java.util.*
+import java.util.logging.Logger
 import javax.inject.Singleton
 
 
@@ -19,6 +20,9 @@ import javax.inject.Singleton
 class KafkaProxy(val appConfig: AppConfig) {
     val POLL_TIME_OUT = 5_000
 
+    companion object {
+        val log = Logger.getLogger(KafkaProxy::class.java.name)
+    }
     private fun getProperties(): Properties {
         println(appConfig.brokers)
         println(appConfig.keyDeserializer)
@@ -46,6 +50,7 @@ class KafkaProxy(val appConfig: AppConfig) {
     }
 
     fun createTopic(topicName: String, numOfPartitions: Int = 1, replicationFactor: Short = 1) {
+        log.info("Creating topic $topicName with $numOfPartitions partitions and $replicationFactor replication factor!")
         val adminClient: AdminClient = AdminClient.create(getProperties())
         val newTopic = NewTopic(topicName, numOfPartitions, replicationFactor)
 
@@ -54,6 +59,7 @@ class KafkaProxy(val appConfig: AppConfig) {
     }
 
     fun deleteTopic(topicName: String) {
+        log.info("Deleting Topic $topicName")
         val adminClient: AdminClient = AdminClient.create(getProperties())
         adminClient.deleteTopics(listOf(topicName))
         adminClient.close()
