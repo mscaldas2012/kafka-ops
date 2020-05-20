@@ -16,6 +16,14 @@ internal class KafkaProxyTest {
     @Inject
     lateinit var kafkaProxy: KafkaProxy
 
+    val appConfig = AppConfig()
+
+    init {
+        appConfig.brokers = "http://localhost:9092"
+        appConfig.keyDeserializer = "org.apache.kafka.common.serialization.StringDeserializer"
+        appConfig.valueDeserializer = "org.apache.kafka.common.serialization.StringDeserializer"
+        kafkaProxy = KafkaProxy(appConfig)
+    }
 
     @Test
     fun listTopics() {
@@ -25,6 +33,13 @@ internal class KafkaProxyTest {
     @Test
     fun testCreateTopic() {
         kafkaProxy.createTopic("unit-test-${UUID.randomUUID()}")
+    }
+    @Test
+    fun testCreateTopicWihtPartitions() {
+        val topicName = "uni-test-10-p-${UUID.randomUUID()}"
+        kafkaProxy.createTopic(topicName, 10, 3)
+        val info = kafkaProxy.getTopicInfo(topicName)
+        assert(info.size == 10)
     }
 
     @Test
@@ -58,3 +73,4 @@ internal class KafkaProxyTest {
         println("partition Number: ${info.partitionNumber}")
     }
 }
+

@@ -1,6 +1,5 @@
 package kafka.ops
 
-import io.micronaut.context.annotation.Value
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -48,7 +47,7 @@ class KafkaProxy(val appConfig: AppConfig) {
 
     fun createTopic(topicName: String, numOfPartitions: Int = 1, replicationFactor: Short = 1) {
         val adminClient: AdminClient = AdminClient.create(getProperties())
-        val newTopic = NewTopic(topicName, numOfPartitions, replicationFactor) //new NewTopic(topicName, numPartitions, replicationFactor)
+        val newTopic = NewTopic(topicName, numOfPartitions, replicationFactor)
 
         adminClient.createTopics(listOf(newTopic))
         adminClient.close()

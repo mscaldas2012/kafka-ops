@@ -236,8 +236,8 @@
     </dependencies>
   </dependencyManagement>
   <properties>
-    <micronaut.version>1.3.2</micronaut.version>
-    <kotlinVersion>1.3.50</kotlinVersion>
+    <micronaut.version>1.3.5</micronaut.version>
+    <kotlinVersion>1.3.71</kotlinVersion>
     <exec.mainClass>kafka.ops.Application</exec.mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <docker.image.prefix>${env.CI_REGISTRY}/${env.CI_PROJECT_NAMESPACE}</docker.image.prefix>

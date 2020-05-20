@@ -8,7 +8,7 @@ docker-compose exec kafka kafka-console-consumer --topic test1 --bootstrap-serve
 docker-compose exec kafka kafka-topics —-zookeeper localhost:2181 —-list —-topic validationReport
 
 # Send message to topic via TTY
-docker-compose exec kafka kafka-console-producer  --broker-list kafka:9092 --topic test1 --property "parse.key=true" --property "key.separator=^"
+docker-compose exec kafka kafka-console-producer  --broker-list kafka:9092 --topic aadTopic --property "parse.key=true" --property "key.separator=^"
 
 
 # Send messages bigger than 4095 charactes: (via file)

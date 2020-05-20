@@ -5,10 +5,10 @@
   <version>0.1</version>
   <properties>
     <exec.mainClass>kafka.ops.Application</exec.mainClass>
-    <micronaut.version>1.3.2</micronaut.version>
+    <micronaut.version>1.3.5</micronaut.version>
     <jdk.version>11</jdk.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <kotlinVersion>1.3.50</kotlinVersion>
+    <kotlinVersion>1.3.71</kotlinVersion>
     <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
     <docker.image.prefix>${env.CI_REGISTRY}/${env.CI_PROJECT_NAMESPACE}</docker.image.prefix>
   </properties>
