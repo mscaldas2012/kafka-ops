@@ -6,7 +6,6 @@ import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.*
 import kafka.ops.security.S2SAuth
 import kafka.ops.security.ServiceNotAuthorizedException
-import java.util.*
 import java.util.logging.Logger
 
 /**
@@ -27,11 +26,11 @@ class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
         s2sauth.checkS2SCredentials(token)
         return kafkaProxy.listTopics()
     }
-    @Post("/topics/{topicName}")
-    fun createTopic(@Header("s2s-token") token: String, topicName:String, @QueryValue nbrOfPartitions: Int = 10, @QueryValue replicationFactor: Short = 3  ): HttpResponse<String> {
+    @Post("/topics/{topicName}") //Default values not workinng for Controller
+    fun createTopic(@Header("s2s-token") token: String, topicName:String, @QueryValue nbrOfPartitions: Int? = 10, @QueryValue replicationFactor: Short? = 3  ): HttpResponse<String> {
         logger.info("AUDIT - Creating new Topic $topicName")
         s2sauth.checkS2SCredentials(token)
-        kafkaProxy.createTopic(topicName, nbrOfPartitions, replicationFactor)
+        kafkaProxy.createTopic(topicName, nbrOfPartitions?: 10, replicationFactor?: 3)
         return HttpResponse.ok("topic ${topicName} created")
     }
 

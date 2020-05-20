@@ -49,7 +49,7 @@ class KafkaProxy(val appConfig: AppConfig) {
         return getConsumer().listTopics().keys.filter { !it.startsWith("__")}.toTypedArray()
     }
 
-    fun createTopic(topicName: String, numOfPartitions: Int = 1, replicationFactor: Short = 1) {
+    fun createTopic(topicName: String, numOfPartitions: Int = 10, replicationFactor: Short = 3) {
         log.info("Creating topic $topicName with $numOfPartitions partitions and $replicationFactor replication factor!")
         val adminClient: AdminClient = AdminClient.create(getProperties())
         val newTopic = NewTopic(topicName, numOfPartitions, replicationFactor)
