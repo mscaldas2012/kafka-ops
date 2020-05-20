@@ -28,7 +28,7 @@ class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
         return kafkaProxy.listTopics()
     }
     @Post("/topics/{topicName}")
-    fun createTopic(@Header("s2s-token") token: String, topicName:String, @QueryValue nbrOfPartitions: Int = 1, @QueryValue replicationFactor: Short = 1  ): HttpResponse<String> {
+    fun createTopic(@Header("s2s-token") token: String, topicName:String, @QueryValue nbrOfPartitions: Int = 10, @QueryValue replicationFactor: Short = 3  ): HttpResponse<String> {
         logger.info("AUDIT - Creating new Topic $topicName")
         s2sauth.checkS2SCredentials(token)
         kafkaProxy.createTopic(topicName, nbrOfPartitions, replicationFactor)
