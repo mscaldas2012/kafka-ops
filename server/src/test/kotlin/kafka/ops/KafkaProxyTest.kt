@@ -2,7 +2,6 @@ package kafka.ops
 
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
 import java.util.*
 import javax.inject.Inject
 
@@ -14,7 +13,7 @@ import javax.inject.Inject
 internal class KafkaProxyTest {
 
     @Inject
-    lateinit var kafkaProxy: KafkaProxy
+    lateinit var kafkaProxy: KafkaProxyJson
 
     val appConfig = AppConfig()
 
@@ -22,7 +21,7 @@ internal class KafkaProxyTest {
         appConfig.brokers = "http://localhost:9092"
         appConfig.keyDeserializer = "org.apache.kafka.common.serialization.StringDeserializer"
         appConfig.valueDeserializer = "org.apache.kafka.common.serialization.StringDeserializer"
-        kafkaProxy = KafkaProxy(appConfig)
+        kafkaProxy = KafkaProxyJson(appConfig)
     }
 
     @Test
@@ -44,7 +43,7 @@ internal class KafkaProxyTest {
 
     @Test
     fun testListTopicContent() {
-        val msgs = kafkaProxy.getTopicContent("test1", 0)
+        val msgs = kafkaProxy.getTopicContent<String>("test1", 0)
         msgs.forEach { println(it) }
     }
 

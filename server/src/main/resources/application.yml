@@ -25,9 +25,12 @@ kafka:
         key:
             serde: org.apache.kafka.common.serialization.Serdes$StringSerde
             deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            #deserializer: kafka.ops.JsonPOJODeserializer
         value:
-            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-            deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+#            deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            serde: kafka.ops.JsonElementSerde
+            deserializer: kafka.ops.JsonPOJODeserializer
 #      key.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 #      value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 

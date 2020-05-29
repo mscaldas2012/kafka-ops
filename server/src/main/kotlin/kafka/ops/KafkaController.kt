@@ -1,11 +1,14 @@
 package kafka.ops
 
+import com.fasterxml.jackson.databind.JsonNode
+
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.*
 import kafka.ops.security.S2SAuth
 import kafka.ops.security.ServiceNotAuthorizedException
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import java.util.logging.Logger
 
 /**
@@ -15,7 +18,7 @@ import java.util.logging.Logger
  * @Author Marcelo Caldas mcq1@cdc.gov
  */
 @Controller("/kafka")
-class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
+class KafkaController(val kafkaProxy: KafkaProxyJson, val s2sauth: S2SAuth) {
     companion object {
         val logger = Logger.getLogger(KafkaController::class.toString())
     }
@@ -35,18 +38,19 @@ class KafkaController(val kafkaProxy: KafkaProxy, val s2sauth: S2SAuth) {
     }
 
     @Get("topics/{topicName}")
-    fun listTopicContent(@Header("s2s-token") token: String, topicName: String): MutableHttpResponse<List<String>>? {
+    fun <T> listTopicContent(@Header("s2s-token") token: String, topicName: String, @QueryValue offset: Long? ): MutableHttpResponse<List<TopicRecord>>? {
         logger.info("AUDIT - Getting contents of topic $topicName")
         s2sauth.checkS2SCredentials(token)
-        val content = kafkaProxy.getTopicContent(topicName)
+        //val content = kafkaProxy.getTopicContent<T>(topicName, offset?:0 )
+        val content = kafkaProxy.getConsumerRecords<T>(topicName, offset?:0)
         return HttpResponse.ok(content)
     }
 
     @Get("topics/{topicName}/{partition}")
-    fun listTopicContentForPartition(@Header("s2s-token") token: String, topicName: String, partition: Int): MutableHttpResponse<List<String>>? {
+    fun <T> listTopicContentForPartition(@Header("s2s-token") token: String, topicName: String, partition: Int, @QueryValue offset: Long?): MutableHttpResponse<List<T>>? {
         logger.info("AUDIT - Getting contents of topic $topicName / partition $partition")
         s2sauth.checkS2SCredentials(token)
-        val content = kafkaProxy.getTopicContent(topicName, partition)
+        val content = kafkaProxy.getTopicContent<T>(topicName, partition, offset ?: 0)
         return HttpResponse.ok(content)
     }
 
