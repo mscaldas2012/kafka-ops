@@ -1,14 +1,15 @@
 package kafka.ops;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JsonPOJODeserializer<T> implements Deserializer<T> {
+    private Logger logger = LoggerFactory.getLogger(JsonPOJODeserializer.class);
     ObjectMapper mapper  = new ObjectMapper();
 
     /**
@@ -32,7 +33,7 @@ public class JsonPOJODeserializer<T> implements Deserializer<T> {
         try {
             data = (T) mapper.readTree(new String(bytes));
         } catch (JsonProcessingException e) {
-            System.out.println("Unable to parse json: " + e);
+            logger.error("Unable to parse json: " + e);
            // throw new SerializationException(e);
             ObjectNode node = mapper.createObjectNode();
             node.put("INVALID", "Invalid Json: " + e);

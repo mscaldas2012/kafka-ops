@@ -10,4 +10,7 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
+
+    <logger name="org.apache.kafka.clients" level="WARN"/>
+    <logger name="kafka.ops" level ="DEBUG"/>
 </configuration>

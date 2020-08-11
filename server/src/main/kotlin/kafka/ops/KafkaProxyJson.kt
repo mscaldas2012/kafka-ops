@@ -5,9 +5,9 @@ import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.*
-import java.util.logging.Logger
 import javax.inject.Singleton
 
 
@@ -22,12 +22,12 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
     val POLL_TIME_OUT = 5_000
 
     companion object {
-        val log = Logger.getLogger(KafkaProxyJson::class.java.name)
+        val logger = LoggerFactory.getLogger(KafkaProxyJson::class.java.name)
     }
     private fun getProperties(): Properties {
-        println(appConfig.brokers)
-        println(appConfig.keyDeserializer)
-        println(appConfig.valueDeserializer)
+//        println(appConfig.brokers)
+//        println(appConfig.keyDeserializer)
+//        println(appConfig.valueDeserializer)
         val props = Properties()
 
         props.put("bootstrap.servers", appConfig.brokers)
@@ -49,7 +49,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
     }
 
     override fun createTopic(topicName: String, numOfPartitions: Int, replicationFactor: Short) {
-        log.info("Creating topic $topicName with $numOfPartitions partitions and $replicationFactor replication factor!")
+        logger.info("Creating topic $topicName with $numOfPartitions partitions and $replicationFactor replication factor!")
         val adminClient: AdminClient = AdminClient.create(getProperties())
         val newTopic = NewTopic(topicName, numOfPartitions, replicationFactor)
 
@@ -58,7 +58,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
     }
 
     override fun deleteTopic(topicName: String) {
-        log.info("Deleting Topic $topicName")
+        logger.info("Deleting Topic $topicName")
         val adminClient: AdminClient = AdminClient.create(getProperties())
         adminClient.deleteTopics(listOf(topicName))
         adminClient.close()
@@ -121,7 +121,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
              consumer.seek(it, offset)
          }
         val records = mutableListOf<T>()
-        println("Querying topic...")
+         logger.debug("Querying topic...")
         val startPolling = Date()
         var continuePolling = true;
         do {
@@ -129,7 +129,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
             records.addAll(newRecords.map {it.value()} )
             val endPolling = Date()
             continuePolling= (newRecords.count() == 0) && (endPolling.time - startPolling.time < POLL_TIME_OUT)
-            println("found ${newRecords.count()} records")
+            logger.debug("found ${newRecords.count()} records")
         } while (continuePolling)
         return records
     }
@@ -143,7 +143,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
             consumer.seek(it, offset)
         }
         val records = mutableListOf<TopicRecord>()
-        println("Querying topic...")
+        logger.debug("Querying topic...")
         val startPolling = Date()
         var continuePolling = true;
         do {
@@ -151,7 +151,7 @@ class KafkaProxyJson(val appConfig: AppConfig) : IKafkaProxy {
             records.addAll(newRecords.map {TopicRecord(it.offset(), it.partition(), it.key(), it.value())} )
             val endPolling = Date()
             continuePolling= (newRecords.count() == 0) && (endPolling.time - startPolling.time < POLL_TIME_OUT)
-            println("found ${newRecords.count()} records")
+            logger.debug("found ${newRecords.count()} records")
         } while (continuePolling)
         return records
     }

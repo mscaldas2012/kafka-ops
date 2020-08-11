@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta4
+kind: Config
+metadata:
+  name: server
+build:
+  artifacts:
+  - image: 471108701394.dkr.ecr.us-east-1.amazonaws.com/arln/kafka-ops
+deploy:
+  kubectl:
+    manifests:
+    - ambassador.yml
+    - deployment.yaml
+    - kafka-ops-deployment.yaml
+    - helm/kafka-ops/templates/ingress.yaml
+    - helm/kafka-ops/templates/service.yaml
